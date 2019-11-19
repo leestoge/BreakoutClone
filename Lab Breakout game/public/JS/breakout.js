@@ -38,6 +38,7 @@ function preload()
     this.load.image('brick1', 'https://i.imgur.com/xsThr8v.png');
     this.load.image('brick2', 'https://i.imgur.com/RDEQsP7.png');
     this.load.image('brick3', 'https://i.imgur.com/NUBmZxS.png');
+	this.load.image('white', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/particles/white.png');
 }
 
 function create()
@@ -99,6 +100,16 @@ function create()
                 stepX: 70
             }
     });
+	
+	//particle that follows ball
+	var particles = this.add.particles("white");
+	var emitter = particles.createEmitter({
+		speed: 100,
+		scale: { start: 0.3, end: 0 },
+		blendMode: "ADD" 	//if this doesn’t work try ‘NORMAL’
+	});
+
+	emitter.startFollow(ball);
 	
     //adding player movement with keyboard input
     cursors = this.input.keyboard.createCursorKeys();

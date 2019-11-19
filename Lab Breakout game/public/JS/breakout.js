@@ -29,6 +29,7 @@ const game = new Phaser.Game(config);
 //variable declarations
 let player, ball, violetBricks, yellowBricks, redBricks, cursors;
 let gameStarted = false;
+let openingText, gameOverText, playerWonText;
 
 function preload()
 {
@@ -98,7 +99,7 @@ function create()
                 stepX: 70
             }
     });
-
+	
     //adding player movement with keyboard input
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -116,6 +117,53 @@ function create()
     player.setImmovable(true);
     //collider between the ball and the player
     this.physics.add.collider(ball, player, hitPlayer, null, this);
+	
+	//adding opening text
+	openingText = this.add.text(
+    this.physics.world.bounds.width / 2,
+    this.physics.world.bounds.height / 2,
+    'Press SPACE to start',
+    {
+        fontFamily: 'Monaco, Courier, monospace',
+        fontSize: '50px',
+        fill: '#fff'
+    });
+
+	openingText.setOrigin(0.5);
+
+	//game over text
+	gameOverText = this.add.text(
+		this.physics.world.bounds.width / 2,
+		this.physics.world.bounds.height / 2,
+		'Game Over',
+		{
+			fontFamily: 'Monaco, Courier, monospace',
+			fontSize: '50px',
+			fill: '#fff'
+		}
+	);
+
+	gameOverText.setOrigin(0.5);
+
+	//Make it invisible until the player loses
+	gameOverText.setVisible(false);
+
+	//game won text
+	playerWonText = this.add.text(
+		this.physics.world.bounds.width / 2,
+		this.physics.world.bounds.height / 2,
+		'You won!',
+		{
+			fontFamily: 'Monaco, Courier, monospace',
+			fontSize: '50px',
+			fill: '#fff'
+		}
+	);
+
+	playerWonText.setOrigin(0.5);
+
+	//Make it invisible until the player wins
+	playerWonText.setVisible(false);
 
 }
 
@@ -131,32 +179,51 @@ function update()
         // you have won!
     }
     else
-        {
-            //Put this in so that the player stays still if no key is being pressed
-            player.body.setVelocityX(0);
+	{
+		//Put this in so that the player stays still if no key is being pressed
+		player.body.setVelocityX(0);
 
-            if (cursors.left.isDown)
-            {
-                player.body.setVelocityX(-350);
-            }
-            else if (cursors.right.isDown)
-            {
-                player.body.setVelocityX(350);
-            }
+		if (cursors.left.isDown)
+		{
+			player.body.setVelocityX(-350);
+		}
+		else if (cursors.right.isDown)
+		{
+			player.body.setVelocityX(350);
+		}
 
-            if (!gameStarted)
-            {
-                ball.setX(player.x);
+		if (!gameStarted)
+		{
+			ball.setX(player.x);
 
-                if (cursors.space.isDown)
-                {
-                    gameStarted = true;
-                    ball.setVelocityY(-200);
-                    // openingText.setVisible(false);
-                }
-            }
-
-        }
+			if (cursors.space.isDown)
+			{
+				gameStarted = true;
+				ball.setVelocityY(-200);
+				// openingText.setVisible(false);
+			}
+		}
+    }
+		
+	if (cursors.space.isDown) 
+	{
+		gameStarted = true;
+		ball.setVelocityY(-200);
+		openingText.setVisible(false);
+	}
+	
+	if (isGameOver(this.physics.world)) 
+	{
+		// TODO: Show "Game over" message to the player
+		gameOverText.setVisible(true);
+		ball.disableBody(true, true);
+	} 
+	else if (isWon()) 
+	{
+		// TODO: Show "You won!" message to the player
+		playerWonText.setVisible(true);
+		ball.disable(true, true);
+	} 
 }
 
 function isGameOver(world)
@@ -169,21 +236,27 @@ function isWon()
     return violetBricks.countActive() + yellowBricks.countActive() + redBricks.countActive() === 0;
 }
 
-function hitBrick(ball, brick) {
+function hitBrick(ball, brick) 
+{
     brick.disableBody(true, true);
 
-    if (ball.body.velocity.x === 0) {
+    if (ball.body.velocity.x === 0) 
+	{
         randNum = Math.random();
 
-        if (randNum >= 0.5) {
+        if (randNum >= 0.5) 
+		{
             ball.body.setVelocityX(150);
-        } else {
+        } 
+		else 
+		{
             ball.body.setVelocityX(-150);
         }
     }
 }
 
-function hitPlayer(ball, player) {
+function hitPlayer(ball, player) 
+{
     //increase the velocity of the ball after it bounces
     ball.setVelocityY(ball.body.velocity.y - 5);
 
@@ -195,7 +268,3 @@ function hitPlayer(ball, player) {
         ball.setVelocityX(newXVelocity);
     }
 }
-
-
-
-
